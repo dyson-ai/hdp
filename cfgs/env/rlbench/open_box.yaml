@@ -1,0 +1,10 @@
+# @package _global_
+
+defaults:
+  - rlbench/easy
+  - rlbench
+  - _self_
+
+env:
+  task_name: open_box
+  episode_length: 3

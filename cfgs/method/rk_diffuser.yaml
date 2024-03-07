@@ -1,0 +1,38 @@
+_target_: rk_diffuser.models.diffusion.GaussianDynDiffusion
+
+horizon: 64
+observation_dim: 7
+dim_mults: [1, 2, 4]
+action_dim: 7
+scene_bounds: ${env.scene_bounds}
+joint_limits: [[-2.89, -1.76, -2.89, -3.07, -2.89, -0.017, -2.89], [2.89, 1.76, 2.89, -0.069, 2.89, 3.75, 2.89]]
+n_timesteps: 100
+loss_type: l2
+clip_denoised: true
+predict_epsilon: false
+hidden_dim: 256
+loss_discount: 1
+condition_guidance_w: 1.2
+reverse_train: true
+conditions: [start, end, proprios, rank, pcds] # pcds
+hard_conditions: [proprios, pcds, start, end]
+noise_init_method: normal
+loss_fn: state_l2
+coverage_weight: 1.0
+detach_reverse: false
+joint_weight: 1.0
+robot_offset: ${env.robot_offset}
+trans_loss_scale: 100.0
+rot_loss_scale: 1.0
+joint_pred_pose_loss: true
+joint_loss_scale: 100.0
+rank_bins: 10
+
+backbone: unet
+num_encoder_layers: 4
+num_decoder_layers: 4
+n_head: 8
+causal_attn: true
+
+depth_proc: pointnet
+rgb_encoder: resnet50

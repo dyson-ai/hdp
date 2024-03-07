@@ -1,0 +1,12 @@
+# @package _global_
+
+env:
+  env_name: rlbench
+  episode_length: 100
+  dataset_root: ''
+  demos: 10
+  visual_observation_shape: [128, 128]
+  action_mode: JOINT_POSITION_COLLISION
+  cameras: ['wrist', "front", "left_shoulder", "right_shoulder"]
+  use_standardization: false
+  renderer: opengl

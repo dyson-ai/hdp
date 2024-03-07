@@ -1,0 +1,10 @@
+# @package _global_
+
+defaults:
+  - rlbench/easy
+  - rlbench
+  - _self_
+
+env:
+  task_name: reach_target
+  episode_length: 2

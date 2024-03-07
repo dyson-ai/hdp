@@ -1,0 +1,10 @@
+# @package _global_
+
+defaults:
+  - rlbench/easy
+  - rlbench
+  - _self_
+
+env:
+  task_name: take_lid_off_saucepan
+  episode_length: 3
