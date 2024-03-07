@@ -19,7 +19,7 @@ batch_size: 32
 learning_rate: 5e-5
 gradient_accumulate_every: 2
 ema_decay: 0.995
-log: true
+log: false
 log_freq: 1000
 save_freq: 10000
 log_dir: 'logs/'

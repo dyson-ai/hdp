@@ -110,7 +110,7 @@ def main(cfgs):
             cfgs.env.tasks_ratio,
             cfgs.env.cameras,
             cfgs.env.num_episodes // 2,
-            data_raw_path=os.path.join(cfgs.env.data_path, "test"),
+            data_raw_path=os.path.join(cfgs.env.data_path, "eval"),
             traj_len=cfgs.method.horizon,
             frame_skips=cfgs.frame_skips,
             observation_dim=cfgs.method.observation_dim,

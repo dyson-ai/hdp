@@ -197,7 +197,7 @@ class AbsCustomMoveArmThenGripper(MoveArmThenGripper):
             np.array(ACT_MIN + ACT_RANGE, dtype=np.float32),
         )
 
-def run(i, lock, task_index, variation_count, results, file_lock, tasks, joint_action_mode):
+def run(i, lock, task_index, variation_count, results, file_lock, tasks, joint_action_mode, tag):
     """Each thread will choose one task and variation, and then gather
     all the episodes_per_task for that variation."""
 
@@ -288,7 +288,7 @@ def run(i, lock, task_index, variation_count, results, file_lock, tasks, joint_a
         # Figure out what task/variation this thread is going to do
         with lock:
 
-            if task_index.value >= num_tasks:
+            if task_index.value >= num_tasks * 2:
                 print('Process', i, 'finished')
                 break
 
@@ -305,17 +305,17 @@ def run(i, lock, task_index, variation_count, results, file_lock, tasks, joint_a
                 task_index.value += 1
 
             variation_count.value += 1
-            if task_index.value >= num_tasks:
+            if task_index.value >= num_tasks * 2:
                 print('Process', i, 'finished')
                 break
-            t = tasks[task_index.value]
+            t = tasks[task_index.value // 2]
 
         task_env = rlbench_env.get_task(t)
         task_env.set_variation(my_variation_count)
         descriptions, _ = task_env.reset()
 
         variation_path = os.path.join(
-            FLAGS.save_path, task_env.get_name(),
+            FLAGS.save_path, tag, task_env.get_name(),
             VARIATIONS_FOLDER % my_variation_count)
 
         check_and_make(variation_path)
@@ -395,8 +395,8 @@ def main(argv):
     processes = [Process(
         target=run, args=(
             i, lock, task_index, variation_count, result_dict, file_lock,
-            tasks, joint_action_mode))
-        for i in range(FLAGS.processes)]
+            tasks, joint_action_mode, tag))
+        for i in range(FLAGS.processes) for tag in ["train", "eval"]]
     [t.start() for t in processes]
     [t.join() for t in processes]
 

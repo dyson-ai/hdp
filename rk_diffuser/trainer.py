@@ -198,7 +198,7 @@ class Trainer(object):
                 headless=True,
                 use_traj=use_traj,
             )
-            for task in self._cfgs.tasks
+            for task in self._cfgs.env.tasks
         }
 
         manager = Manager()

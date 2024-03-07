@@ -24,18 +24,21 @@ For more details, see our [project page](https://yusufma03.github.io/projects/hd
 conda create -n hdp python=3.10
 conda activate hdp
 bash ./extra_scripts/install_coppeliasim.sh
+conda install pytorch torchvision pytorch-cuda=11.8 -c pytorch -c nvidia
 pip install cffi==1.15
 pip install -r requirements.txt
 ```
 
 ## Generate the dataset
+First, we need to generate the training dataset.
 ```bash
 python extra_scripts/dataset_generator.py --save_path=<your dataset path> --tasks=<your task> --variations=1 --processes=1 --episodes_per_task=100
 ```
 For example, to generate a dataset for the `reach_target` task,
 ```bash
-python extra_scripts/dataset_generator.py --save_path=/data/${USER}/rlbench/train --tasks=reach_target --variations=1 --processes=1 --episodes_per_task=100
+python extra_scripts/dataset_generator.py --save_path=/data/${USER}/rlbench --tasks=reach_target --variations=1 --processes=1 --episodes_per_task=100
 ```
+The script will generate both `train` and `eval` datasets at the same time.
 
 ## Training the low-level RK-Diffuser
 To train the low-level sim agent, simply do
@@ -43,9 +46,9 @@ To train the low-level sim agent, simply do
 python3 train_low_level.py env=sim env.data_path=<your dataset path> env.tasks=[<task1>, <task2>, ...]
 ```
 
-You can disable online logging or set wandb run name by adding the following args
+You can enable online logging or set wandb run name by adding the following args
 ```bash
-log=False run_name=<your run name>
+log=True run_name=<your run name>
 ```
 
 ## Citation
