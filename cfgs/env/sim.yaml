@@ -1,0 +1,12 @@
+name: sim
+tasks: [reach_target, take_lid_off_saucepan, pick_up_cup, toilet_seat_up, open_box, open_door, open_drawer, open_grill, open_microwave, put_knife_on_chopping_board, open_oven]
+tasks_ratio: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+scene_bounds: [[-0.5, -0.6, 0.75], [0.5, 0.55, 1.48]]
+robot_offset: [0.30895137786865234, 0.0, -0.8200176358222961]
+robot_rot: [[0.0, -0.15618760883808136, 0.9877274036407471], [0.0, -0.9877274036407471, -0.15618760883808136], [1.0, 0.0, 0.0]]
+cameras: [front]
+num_episodes: 100
+num_episodes_eval: 1
+data_path: ""
+demo_aug_ratio: 0
+demo_aug_min_len: 5

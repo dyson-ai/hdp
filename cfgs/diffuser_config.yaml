@@ -1,0 +1,44 @@
+defaults:
+  - _self_
+  - method: rk_diffuser
+  - env: sim
+
+frame_skips: 1
+condition_dropout: 0.25
+condition_guidance_w: 1.2
+
+clip_denoised: true
+discount: 0.99
+hidden_dim: 256
+
+## training
+n_epochs: 100000
+loss_type: l2
+n_train_steps: 1e6
+batch_size: 32
+learning_rate: 5e-5
+gradient_accumulate_every: 2
+ema_decay: 0.995
+log: false
+log_freq: 1000
+save_freq: 10000
+log_dir: 'logs/'
+project_name: HDP
+run_name: ''
+
+load_model_path: ''
+online_eval: false
+headless: true 
+
+diffusion_var: multi
+action_mode: diff
+online_eval_start: 20000
+
+diff_optim: true
+diff_optim_steps: 200
+diff_lr: 10
+eval_only: false
+
+pose_augment: false
+use_cached: true
+ds_img_size: 128

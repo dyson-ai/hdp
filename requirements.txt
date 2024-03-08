@@ -1,0 +1,11 @@
+absl-py
+hydra-core
+opencv-python-headless
+plotly
+einops
+pytorch-kinematics[mujoco]
+pyrender
+cffi==1.15
+git+https://github.com/Yusufma03/YARR.git@wandb_logger
+git+https://github.com/stepjam/PyRep.git
+git+https://github.com/stepjam/RLBench.git
