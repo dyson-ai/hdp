@@ -25,6 +25,7 @@ conda create -n hdp python=3.10
 conda activate hdp
 bash ./extra_scripts/install_coppeliasim.sh
 conda install pytorch torchvision pytorch-cuda=11.8 -c pytorch -c nvidia
+pip install cffi==1.15
 pip install -r requirements.txt
 ```
 
