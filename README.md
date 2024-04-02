@@ -25,9 +25,11 @@ conda create -n hdp python=3.10
 conda activate hdp
 bash ./extra_scripts/install_coppeliasim.sh
 conda install pytorch torchvision pytorch-cuda=11.8 -c pytorch -c nvidia
-pip install cffi==1.15
 pip install -r requirements.txt
 ```
+
+## Running in headless mode
+Please refer to the official guide of [RLBench](https://github.com/stepjam/RLBench?tab=readme-ov-file#running-headless).
 
 ## Generate the dataset
 First, we need to generate the training dataset.
@@ -43,7 +45,12 @@ The script will generate both `train` and `eval` datasets at the same time.
 ## Training the low-level RK-Diffuser
 To train the low-level sim agent, simply do
 ```bash
-python3 train_low_level.py env=sim env.data_path=<your dataset path> env.tasks=[<task1>, <task2>, ...]
+python3 train_low_level.py env=sim env.data_path=<your dataset path> env.tasks="[<task1>, <task2>, ...]"
+```
+
+For example, to train a model for the `reach_target` and the `take_lid_off_saucepan` tasks, run
+```bash
+python3 train_low_level.py env=sim env.data_path=/data/${USER}/rlbench env.tasks="[reach_target, take_lid_off_saucepan]"
 ```
 
 You can enable online logging or set wandb run name by adding the following args

@@ -23,7 +23,7 @@ log: false
 log_freq: 1000
 save_freq: 10000
 log_dir: 'logs/'
-project_name: TrajDiffusion
+project_name: HDP
 run_name: ''
 
 load_model_path: ''

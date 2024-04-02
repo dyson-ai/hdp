@@ -79,7 +79,7 @@ class Trainer(object):
         save_freq: int = 10000,
         train_device: str = "cuda",
         log: bool = False,
-        project_name: str = "TrajDiffusion",
+        project_name: str = "HDP",
         online_eval: bool = False,
         headless: bool = True,
         rank_bins: int = 10,
@@ -107,7 +107,7 @@ class Trainer(object):
         - save_freq (int, optional): The frequency of saving checkpoints. Defaults to 10000.
         - train_device (str, optional): The device for training. Defaults to "cuda".
         - log (bool, optional): Whether to log. Defaults to False.
-        - project_name (str, optional): The name of the project. Defaults to "TrajDiffusion".
+        - project_name (str, optional): The name of the project. Defaults to "HDP".
         - online_eval (bool, optional): Whether to perform online evaluation. Defaults to False.
         - headless (bool, optional): Whether to run in headless mode. Defaults to True.
         - rank_bins (int, optional): The number of rank bins. Defaults to 10.
