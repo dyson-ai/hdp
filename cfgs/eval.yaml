@@ -1,0 +1,40 @@
+defaults:
+  - _self_
+  - env: sim
+
+method:
+    name: HDP
+    model_path: ''
+
+rlbench:
+    task_name: "multi_18T"
+    tasks: [open_drawer]
+    demo_path: /home/maxiao/repos/dataset/peract/eval
+    episode_length: 4
+    cameras: [front,left_shoulder,right_shoulder,wrist]
+    camera_resolution: [128, 128]
+    scene_bounds: [-0.3, -0.5, 0.6, 0.7, 0.5, 1.6]
+    include_lang_goal_in_obs: True
+    time_in_state: True
+    headless: True
+
+framework:
+    tensorboard_logging: True
+    csv_logging: True
+    gpu: 0
+    logdir: /home/maxiao/repos/peract/logs/open_drawer/
+    start_seed: 1
+    record_every_n: 5
+
+    eval_envs: 1
+    eval_from_eps_number: 0
+    eval_episodes: 25
+    eval_type: 'last' # or 'best'
+    eval_save_metrics: True
+
+cinematic_recorder:
+    enabled: True
+    camera_resolution: [1280, 720]
+    fps: 30
+    rotate_speed: 0.005
+    save_path: '/tmp/videos/'

@@ -1,0 +1,15 @@
+absl-py
+einops
+ftfy
+gdown
+matplotlib
+numpy
+packaging
+pandas
+pyrender
+pytorch3d
+regex
+scipy
+tensorboard
+transformers
+trimesh

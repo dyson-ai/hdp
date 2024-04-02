@@ -97,6 +97,7 @@ class GaussianDynDiffusion(nn.Module):
         causal_attn: bool,
         depth_proc: str,
         rgb_encoder: str,
+        **kwargs,
     ):
         """
         Initializes the class with the given parameters.

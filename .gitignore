@@ -8,3 +8,4 @@ saved_models/
 exp_local/
 eval_video/
 *.html
+*egg-info/

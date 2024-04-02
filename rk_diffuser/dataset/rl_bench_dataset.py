@@ -433,18 +433,20 @@ class RLBenchDataset(Dataset):
 
         start, end = 0, cur_traj_len - 1
 
-        if self._demo_aug_ratio > 0:
+        demo_aug_len = max(cur_traj_len - 1, self._demo_aug_min_len)
+        if self._demo_aug_ratio > 0 and cur_traj_len > demo_aug_len:
             start_left = np.random.rand() < 0.5
-            demo_aug_len = min(cur_traj_len - 1, self._demo_aug_min_len)
             if start_left:
                 start = np.random.randint(0, demo_aug_len)
                 end = np.random.randint(
                     max(cur_traj_len - demo_aug_len, start), cur_traj_len
                 )
             else:
-                start = np.random.randint(cur_traj_len - demo_aug_len, cur_traj_len - 1)
+                start = np.random.randint(
+                    cur_traj_len - demo_aug_len - 1, cur_traj_len - 1
+                )
 
-            gripper_poses = gripper_poses[start:end]
+            gripper_poses = gripper_poses[start : end + 1]
             joints = joints[start:end]
 
         pcds = self._dataset["pcds"][index][start]
