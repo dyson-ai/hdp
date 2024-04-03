@@ -1,7 +1,0 @@
-*.pyc
-.vscode/
-ckpts/
-logs/
-outputs/
-*.egg-info/
-plots/
