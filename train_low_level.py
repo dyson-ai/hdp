@@ -34,7 +34,6 @@ def _create_agent_fn(
         robot.to(device)
 
     assert diffusion_var in VALID_DIFFUSION_VARS
-    breakpoint()
     if diffusion_var == "multi":
         diffusion_pose = hydra.utils.instantiate(
             cfgs,

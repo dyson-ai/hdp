@@ -9,6 +9,7 @@ pandas
 ftfy
 regex
 transformers
+git+https://github.com/openai/CLIP.git
 git+https://github.com/Yusufma03/YARR.git@hdp
 git+https://github.com/stepjam/PyRep.git
 git+https://github.com/stepjam/RLBench.git

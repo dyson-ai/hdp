@@ -447,7 +447,7 @@ class RLBenchDataset(Dataset):
                 )
 
             gripper_poses = gripper_poses[start : end + 1]
-            joints = joints[start:end]
+            joints = joints[start : end + 1]
 
         pcds = self._dataset["pcds"][index][start]
         rgbs = self._dataset["rgbs"][index][start]
