@@ -31,7 +31,6 @@ class QAttentionStackAgent(Agent):
         scene_bounds: List[float],
         rotation_prediction_depth: int = 0,
         diff_model_path: str = "",
-        use_demo: bool = False,
         diff_gripper: bool = True,
     ):
         super(QAttentionStackAgent, self).__init__()
@@ -43,9 +42,7 @@ class QAttentionStackAgent(Agent):
         self._scene_bounds = scene_bounds
         self._rotation_prediction_depth = rotation_prediction_depth
         self._diff_model_path = diff_model_path
-        self._demo = None
         self._keyframes = []
-        self._use_demo = use_demo
         self._diff_gripper = diff_gripper
         # assert os.path.exists(self._diff_model_path)
 
@@ -67,67 +64,7 @@ class QAttentionStackAgent(Agent):
             "total_losses": total_losses,
         }
 
-    def _set_demo(self, observation):
-        keys = [
-            "traj_joint_vels",
-            "traj_joint_positions",
-            "traj_gripper_opens",
-            "traj_gripper_poses",
-        ]
-        self._demo = {k: observation[k][0, 0] for k in keys}
-
-    def _get_keyframes(self):
-        keypoints = []
-        prev_gripper_open = self._demo["traj_gripper_opens"][0]
-        stopped_buffer = 0
-        demo_len = len(self._demo["traj_gripper_opens"])
-
-        def is_stopped(i, stopped_buffer, delta=0.01):
-            next_is_not_final = i == (demo_len - 2)
-            gripper_opens = self._demo["traj_gripper_opens"]
-            joint_vels = self._demo["traj_joint_vels"]
-            gripper_state_no_change = i < (demo_len - 2) and (
-                gripper_opens[i] == gripper_opens[i + 1]
-                and gripper_opens[i] == gripper_opens[i - 1]
-                and gripper_opens[i - 2] == gripper_opens[i - 1]
-            )
-            small_delta = torch.allclose(
-                joint_vels[i],
-                torch.tensor(0.0, dtype=joint_vels.dtype, device=joint_vels.device),
-                atol=delta,
-            )
-            stopped = (
-                stopped_buffer <= 0
-                and small_delta
-                and (not next_is_not_final)
-                and gripper_state_no_change
-            )
-            return stopped
-
-        gripper_opens = self._demo["traj_gripper_opens"]
-        for i in range(demo_len):
-            stopped = is_stopped(i, stopped_buffer, 0.01)
-            stopped_buffer = 4 if stopped else stopped_buffer - 1
-            last = i == (demo_len - 1)
-
-            if i != 0 and (gripper_opens[i] != prev_gripper_open or last or stopped):
-                keypoints.append(i)
-            prev_gripper_open = gripper_opens[i]
-
-        if len(keypoints) > 1 and keypoints[-1] - 1 == keypoints[-2]:
-            keypoints.pop(-2)
-        logging.debug("Found %d keypoints." % len(keypoints), keypoints)
-
-        return [0] + keypoints
-
     def act(self, step: int, observation: dict, deterministic=False) -> ActResult:
-        if "traj_joint_positions" in observation:
-            try:
-                self._set_demo(observation)
-                self._keyframes = self._get_keyframes()
-            except:
-                pass
-
         observation_elements = {}
         translation_results, rot_grip_results, ignore_collisions_results = [], [], []
         infos = {}
@@ -185,14 +122,6 @@ class QAttentionStackAgent(Agent):
         trans = (
             act_results.observation_elements["attention_coordinate"].cpu().numpy()[0]
         )
-        continuous_action = np.concatenate(
-            [
-                trans,
-                quat,
-                rgai[-1:],
-                [ignore_collisions],
-            ]
-        )
 
         _cond, _continuous_data_dict = self._prepare_diffusion_data_dict(
             observation,
@@ -207,12 +136,15 @@ class QAttentionStackAgent(Agent):
         joint_positions = joint_positions.reshape(-1)
         continuous_action = np.concatenate([joint_positions, rgai[-1:]])
         gt_traj = torch.stack([_cond[0], _cond[-1]], dim=1)
-        self._plot(
-            traj.cpu().detach().numpy(),
-            _continuous_data_dict["pcds"].cpu().detach().numpy(),
-            _continuous_data_dict["rgbs"].cpu().detach().numpy(),
-            gt_trajs=gt_traj.cpu().detach().numpy(),
-        )
+
+        # Plotting function is for my debugging use
+
+        # self._plot(
+        #     traj.cpu().detach().numpy(),
+        #     _continuous_data_dict["pcds"].cpu().detach().numpy(),
+        #     _continuous_data_dict["rgbs"].cpu().detach().numpy(),
+        #     gt_trajs=gt_traj.cpu().detach().numpy(),
+        # )
         return ActResult(
             continuous_action, observation_elements=observation_elements, info=infos
         )
@@ -284,7 +216,7 @@ class QAttentionStackAgent(Agent):
             plot_data += gt_plot
 
         fig = go.Figure(plot_data)
-        path = f"/home/{getpass.getuser()}/repos/peract/plots"
+        path = f"/home/{getpass.getuser()}/hdp_plots"
         os.makedirs(path, exist_ok=True)
         existings = os.listdir(path)
         fig.write_html(os.path.join(path, f"vis_{len(existings)}.html"))
@@ -292,26 +224,16 @@ class QAttentionStackAgent(Agent):
     def _prepare_diffusion_data_dict(
         self, observation: dict, trans: np.array, quat: np.array
     ) -> dict:
-        if self._use_demo and len(self._keyframes) > 1:
-            idx = self._keyframes.pop(0)
-            joints = self._demo["traj_joint_positions"]
-            gripper_poses = self._robot.forward_kinematics_batch(joints)
+        start_pose = observation["gripper_pose"][0]
+        joints = observation["joint_position"][0]
+        if quat[-1] < 0:
+            quat = -quat
 
-            start_pose = gripper_poses[idx : idx + 1]
-            joints = joints[idx : idx + 1]
-            end_pose = gripper_poses[self._keyframes[0] : self._keyframes[0] + 1]
-
-        else:
-            start_pose = observation["gripper_pose"][0]
-            joints = observation["joint_position"][0]
-            if quat[-1] < 0:
-                quat = -quat
-
-            end_pose = torch.tensor(
-                np.concatenate([trans, quat], axis=0),
-                dtype=start_pose.dtype,
-                device=start_pose.device,
-            )[None]
+        end_pose = torch.tensor(
+            np.concatenate([trans, quat], axis=0),
+            dtype=start_pose.dtype,
+            device=start_pose.device,
+        )[None]
 
         rgbs = tvf.resize(observation["front_rgb"][0], (64, 64))
         pcds = tvf.resize(observation["front_point_cloud"][0], (64, 64))
@@ -354,25 +276,6 @@ class QAttentionStackAgent(Agent):
             del_keys = [k for k in state_dict if "loss_fn.weights" in k]
             for k in del_keys:
                 del state_dict[k]
-
-            if backbone == "unet":
-                model_keys = self._diffusion_agent.state_dict()
-                for k in del_keys:
-                    del model_keys[k]
-                mis_matched_keys = [k for k in model_keys if k not in state_dict]
-
-                new_dict = {}
-                if len(mis_matched_keys) > 0:
-                    print("trying to load legacy models")
-
-                    for k in model_keys:
-                        if k not in mis_matched_keys:
-                            new_dict[k] = state_dict[k]
-                        else:
-                            legacy_key = k.replace("_backbone.", "")
-                            new_dict[k] = state_dict[legacy_key]
-
-                    state_dict = new_dict
 
             self._diffusion_agent.load_state_dict(state_dict, strict=False)
             print("diffusion model loaded")
