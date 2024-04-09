@@ -23,12 +23,12 @@ framework:
     csv_logging: True
     gpu: 0
     logdir: /home/maxiao/repos/peract/logs/open_drawer/
-    start_seed: 1
+    start_seed: 0
     record_every_n: 5
 
     eval_envs: 1
     eval_from_eps_number: 0
-    eval_episodes: 25
+    eval_episodes: 10
     eval_type: 'last' # or 'best'
     eval_save_metrics: True
 

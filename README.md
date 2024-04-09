@@ -63,7 +63,7 @@ log=True run_name=<your run name>
 ## Evaluate the models
 We also provide the full evaluation pipeline to HDP. To run the evaluation, simply do
 ```bash
-python eval.py rlbench.tasks="[<your task>]" rlbench.task_name='<your task>' framework.gpu=<gpu id> framework.start_seed=0 framework.eval_envs=1 framework.eval_from_eps_number=0 framework.eval_episodes=10 framework.csv_logging=True framework.eval_type='last' rlbench.headless=False method.model_path=<path to rk-diffuser ckpt> framework.logdir=<path to peract ckpt dir>
+python eval.py rlbench.tasks="[<your task>]" rlbench.headless=False method.model_path=<path to rk-diffuser ckpt> framework.logdir=<path to peract ckpt dir>
 ```
 
 ## Citation
