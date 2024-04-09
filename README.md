@@ -76,3 +76,7 @@ python eval.py rlbench.tasks="[<your task>]" rlbench.headless=False method.model
   year      = {2024},
 }
 ```
+
+## Credits
+
+This repository is adapted from [PerAct](https://github.com/peract/peract) and [decision diffusers](https://github.com/anuragajay/decision-diffuser/tree/main/code).
